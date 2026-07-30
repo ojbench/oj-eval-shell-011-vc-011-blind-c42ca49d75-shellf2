@@ -38,6 +38,15 @@ private:
 		}
 	}
 
+	static void add_ref_tree(node *p) {
+		if (!p) {
+			return;
+		}
+		add_ref(p);
+		add_ref_tree(p->left);
+		add_ref_tree(p->right);
+	}
+
 	static void release(node *p) {
 		if (!p) {
 			return;
@@ -109,7 +118,7 @@ public:
 	 * @param other the priority_queue to be copied
 	 */
 	priority_queue(const priority_queue &other) : root(other.root), cnt(other.cnt), comp(other.comp) {
-		add_ref(root);
+		add_ref_tree(root);
 	}
 
 	/**
@@ -130,7 +139,7 @@ public:
 			root = other.root;
 			cnt = other.cnt;
 			comp = other.comp;
-			add_ref(root);
+			add_ref_tree(root);
 		}
 		return *this;
 	}
@@ -161,6 +170,7 @@ public:
 			release(old_root);
 			release(single);
 		} catch (...) {
+			root = old_root;
 			release(single);
 			throw;
 		}
@@ -182,6 +192,7 @@ public:
 			--cnt;
 			release(old);
 		} catch (...) {
+			root = old;
 			throw;
 		}
 	}
